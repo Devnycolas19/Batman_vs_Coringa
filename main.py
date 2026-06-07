@@ -29,24 +29,27 @@ fundoStart = pygame.image.load("assets/TelaInicio.png")
 
 batman = pygame.image.load("assets/Batman.png")
 batman = pygame.transform.scale(batman, (160,120))
-carta = pygame.image.load("assets/carta.png")
-carta = pygame.transform.scale(carta, (25,25))
+carta = pygame.image.load("assets/carta1.png")
+carta = pygame.transform.scale(carta, (40,60))
+coringa = pygame.image.load("assets/coringa.png")
+coringa = pygame.transform.scale(coringa, (160, 120))
 missileSound = pygame.mixer.Sound("assets/missile.wav")
 explosaoSound = pygame.mixer.Sound("assets/explosao.wav")
 pygame.mixer.music.load("assets/ironsound.mp3")
 fonteMenu = pygame.font.SysFont("comicsans",18)
 
 def jogar():
-    fundoMov1 = 1
-    fundoMov2 = 1
-    posicaoXPersona = 0
-    posicaoYPersona = 60
-    movimentoXPersona  = 0
-    movimentoYPersona  = 0
-    velocidadeMovPersona = 5
-    posicaoXMissel = 800
-    posicaoYMissel = 100
-    velocidadeMissel = 2
+    tela.blit(fundo, (0, 0))
+    posicaoXbatman = 50
+    posicaoYbatman = 520
+    movimentoXbatman  = 0
+    movimentoYbatman  = 0
+    velocidadeMovbatman = 5
+    posicaoXcoringa = 780
+    posicaoYcoringa = 520
+    posicaoXCarta = 780
+    posicaoYCarta = 510
+    velocidadeCarta = 2
     pontos = 0
     pygame.mixer.Sound.play(missileSound)
     pygame.mixer.music.play(-1)
@@ -55,67 +58,61 @@ def jogar():
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
                 quit()
-                movimentoXPersona = 0
+                movimentoXbatman = 0
             elif evento.type == pygame.KEYDOWN and evento.key == pygame.K_UP:
-                movimentoYPersona = -velocidadeMovPersona
+                movimentoYbatman = -velocidadeMovbatman
             elif evento.type == pygame.KEYDOWN and evento.key == pygame.K_DOWN:
-                movimentoYPersona = velocidadeMovPersona
+                movimentoYbatman = velocidadeMovbatman
             elif evento.type == pygame.KEYUP and evento.key == pygame.K_UP:
-                movimentoYPersona = 0
+                movimentoYbatman = 0
             elif evento.type == pygame.KEYUP and evento.key == pygame.K_DOWN:
-                movimentoYPersona = 0
+                movimentoYbatman = 0
             elif evento.type == pygame.KEYDOWN and evento.key == pygame.K_RIGHT:
-                movimentoXPersona = velocidadeMovPersona
+                movimentoXbatman = velocidadeMovbatman
             elif evento.type == pygame.KEYDOWN and evento.key == pygame.K_LEFT:
-                movimentoXPersona = -velocidadeMovPersona
+                movimentoXbatman = -velocidadeMovbatman
             elif evento.type == pygame.KEYUP and evento.key == pygame.K_RIGHT:
-                movimentoXPersona = 0
+                movimentoXbatman = 0
             elif evento.type == pygame.KEYUP and evento.key == pygame.K_LEFT:
-                movimentoXPersona = 0
+                movimentoXbatman = 0
                 
         
-        posicaoXPersona = posicaoXPersona + movimentoXPersona          
-        posicaoYPersona = posicaoYPersona + movimentoYPersona            
-        if posicaoXPersona < 0 :
-            posicaoXPersona = 0
-        elif posicaoXPersona > 880:
-            posicaoXPersona =880
-        if posicaoYPersona < 0 :
-            posicaoYPersona = 0
-        elif posicaoYPersona > 610:
-            posicaoYPersona = 610
+        posicaoXbatman = posicaoXbatman + movimentoXbatman          
+        posicaoYbatman = posicaoYbatman + movimentoYbatman            
+        if posicaoXbatman < 0 :
+            posicaoXbatman = 0
+        elif posicaoXbatman > 880:
+            posicaoXbatman =880
+        if posicaoYbatman < 0 :
+            posicaoYbatman = 0
+        elif posicaoYbatman > 610:
+            posicaoYbatman = 610
             
             
-        posicaoXMissel = posicaoXMissel - velocidadeMissel
-        if posicaoXMissel < -125:
+        posicaoXCarta = posicaoXCarta - velocidadeCarta
+        if posicaoXCarta < -125:
             pygame.mixer.Sound.play(missileSound)
-            posicaoXMissel = 800
+            posicaoXCarta = 800
             pontos = pontos + 1
-            velocidadeMissel = velocidadeMissel + 1
-            posicaoYMissel = random.randint(0,200)
+            velocidadeCarta = velocidadeCarta + 1
+            posicaoYCarta = random.randint(0,200)
                             
         tela.fill(branco)
-        tela.blit(fundo, (fundoMov1,0) )
-        tela.blit(fundo, (fundoMov2,0) )
-        fundoMov1 -= 1
-        fundoMov2 -= 1
-        if fundoMov1 <= -1129:
-            fundoMov1 = 1129
-        elif fundoMov2 <= -1129:
-            fundoMov2 = 1129
+        tela.blit(fundo, (0, 0))
         
         
-        tela.blit(batman, (posicaoXPersona,posicaoYPersona))
-        tela.blit(carta, (posicaoXMissel, posicaoYMissel) )
+        tela.blit(batman, (posicaoXbatman,posicaoYbatman))
+        tela.blit(coringa, (posicaoXcoringa, posicaoYcoringa))
+        tela.blit(carta, (posicaoXCarta, posicaoYCarta) )
         texto = fonteMenu.render("Pontos: "+str(pontos), True, branco)
         tela.blit(texto, (700,15))
             
-        pixelsPersonaX = list(range(posicaoXPersona, posicaoXPersona+160))
-        pixelsPersonaY = list(range(posicaoYPersona, posicaoYPersona+20))
-        pixelsMisselX = list(range(posicaoXMissel, posicaoXMissel + 125))
-        pixelsMisselY = list(range(posicaoYMissel, posicaoYMissel + 25))
-        if  len( list( set(pixelsMisselY).intersection(set(pixelsPersonaY))) ) > dificuldade:
-            if len( list( set(pixelsMisselX).intersection(set(pixelsPersonaX))   ) )  > dificuldade:
+        pixelsbatmanX = list(range(posicaoXbatman, posicaoXbatman+160))
+        pixelsbatmanY = list(range(posicaoYbatman, posicaoYbatman+20))
+        pixelsCartaX = list(range(posicaoXCarta, posicaoXCarta + 125))
+        pixelsCartaY = list(range(posicaoYCarta, posicaoYCarta + 25))
+        if  len( list( set(pixelsCartaY).intersection(set(pixelsbatmanY))) ) > dificuldade:
+            if len( list( set(pixelsCartaX).intersection(set(pixelsbatmanX))   ) )  > dificuldade:
                 escreverDados(nome, pontos)
                 dead()
                 
