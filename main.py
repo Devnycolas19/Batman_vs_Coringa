@@ -40,70 +40,64 @@ fonteMenu = pygame.font.SysFont("comicsans",18)
 
 def jogar():
     tela.blit(fundo, (0, 0))
-    posicaoXbatman = 50
-    posicaoYbatman = 520
-    movimentoXbatman  = 0
-    movimentoYbatman  = 0
-    velocidadeMovbatman = 5
-    posicaoXcoringa = 780
-    posicaoYcoringa = 520
+    posicaoXbatman = 130
+    posicaoYbatman = 550
+    posicaoXcoringa = 820
+    posicaoYcoringa = 590
     posicaoXCarta = 780
     posicaoYCarta = 510
     velocidadeCarta = 2
+    giroCarta = 0
     pontos = 0
     pygame.mixer.Sound.play(missileSound)
     pygame.mixer.music.play(-1)
     dificuldade = 20
+    chaoBatman = 520
+    pulando = False
+    noChao = True
+    velocidadePulo = 0
+    gravidade = 1
+    abaixado = False
     while True:
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
                 quit()
-                movimentoXbatman = 0
-            elif evento.type == pygame.KEYDOWN and evento.key == pygame.K_UP:
-                movimentoYbatman = -velocidadeMovbatman
-            elif evento.type == pygame.KEYDOWN and evento.key == pygame.K_DOWN:
-                movimentoYbatman = velocidadeMovbatman
-            elif evento.type == pygame.KEYUP and evento.key == pygame.K_UP:
-                movimentoYbatman = 0
-            elif evento.type == pygame.KEYUP and evento.key == pygame.K_DOWN:
-                movimentoYbatman = 0
-            elif evento.type == pygame.KEYDOWN and evento.key == pygame.K_RIGHT:
-                movimentoXbatman = velocidadeMovbatman
-            elif evento.type == pygame.KEYDOWN and evento.key == pygame.K_LEFT:
-                movimentoXbatman = -velocidadeMovbatman
-            elif evento.type == pygame.KEYUP and evento.key == pygame.K_RIGHT:
-                movimentoXbatman = 0
-            elif evento.type == pygame.KEYUP and evento.key == pygame.K_LEFT:
-                movimentoXbatman = 0
+            elif evento.type == pygame.KEYDOWN:
+                    if (evento.key == pygame.K_w or evento.key == pygame.K_UP) and noChao:
+                        pulando = True
+                        noChao = False
+                        velocidadePulo = -18
+                    elif evento.key == pygame.K_s or evento.key == pygame.K_DOWN:
+                        abaixado = True
+                    elif evento.type == pygame.KEYUP:
+                        if evento.key == pygame.K_s or evento.key == pygame.K_DOWN:
+                            abaixado = False
                 
         
-        posicaoXbatman = posicaoXbatman + movimentoXbatman          
-        posicaoYbatman = posicaoYbatman + movimentoYbatman            
-        if posicaoXbatman < 0 :
-            posicaoXbatman = 0
-        elif posicaoXbatman > 880:
-            posicaoXbatman =880
-        if posicaoYbatman < 0 :
-            posicaoYbatman = 0
-        elif posicaoYbatman > 610:
-            posicaoYbatman = 610
+        if pulando:
+            posicaoYbatman += velocidadePulo
+            velocidadePulo += gravidade
+        if posicaoYbatman >= chaoBatman:
+            posicaoYbatman = chaoBatman
+            pulando = False
+            noChao = True
             
             
         posicaoXCarta = posicaoXCarta - velocidadeCarta
+        giroCarta += 5
         if posicaoXCarta < -125:
-            pygame.mixer.Sound.play(missileSound)
             posicaoXCarta = 800
             pontos = pontos + 1
             velocidadeCarta = velocidadeCarta + 1
-            posicaoYCarta = random.randint(0,200)
-                            
+            posicaoYCarta = random.choice([500, 580])
+        cartaGirando = pygame.transform.rotate(carta, giroCarta)                    
         tela.fill(branco)
         tela.blit(fundo, (0, 0))
         
         
         tela.blit(batman, (posicaoXbatman,posicaoYbatman))
         tela.blit(coringa, (posicaoXcoringa, posicaoYcoringa))
-        tela.blit(carta, (posicaoXCarta, posicaoYCarta) )
+        tela.blit(cartaGirando, (posicaoXCarta, posicaoYCarta) )
         texto = fonteMenu.render("Pontos: "+str(pontos), True, branco)
         tela.blit(texto, (700,15))
             
