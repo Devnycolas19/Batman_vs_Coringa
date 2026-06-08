@@ -16,26 +16,26 @@ while True:
         
 tamanho = (1000,700)
 pygame.display.set_caption("Batman vs Coringa")
-icone  = pygame.image.load("assets/logoBat.png")
+icone  = pygame.image.load("bases/logoBat.png")
 pygame.display.set_icon(icone)
 relogio = pygame.time.Clock()
 tela = pygame.display.set_mode( tamanho ) 
 branco = (255, 255, 255)
 preto = (0, 0, 0)
 
-fundo = pygame.image.load("assets/beco.png")
-fundoDead = pygame.image.load("assets/TelaDerrota.png")
-fundoStart = pygame.image.load("assets/TelaInicio.png")
+fundo = pygame.image.load("bases/beco.png")
+fundoDead = pygame.image.load("bases/TelaDerrota.png")
+fundoStart = pygame.image.load("bases/TelaInicio.png")
 
-batman = pygame.image.load("assets/Batman.png")
+batman = pygame.image.load("bases/Batman.png")
 batman = pygame.transform.scale(batman, (160,120))
-carta = pygame.image.load("assets/carta1.png")
+carta = pygame.image.load("bases/carta1.png")
 carta = pygame.transform.scale(carta, (40,60))
-coringa = pygame.image.load("assets/coringa.png")
+coringa = pygame.image.load("bases/coringa.png")
 coringa = pygame.transform.scale(coringa, (160, 120))
-missileSound = pygame.mixer.Sound("assets/missile.wav")
-explosaoSound = pygame.mixer.Sound("assets/explosao.wav")
-pygame.mixer.music.load("assets/ironsound.mp3")
+missileSound = pygame.mixer.Sound("bases/missile.wav")
+explosaoSound = pygame.mixer.Sound("bases/explosao.wav")
+pygame.mixer.music.load("bases/ironsound.mp3")
 fonteMenu = pygame.font.SysFont("comicsans",18)
 
 def jogar():
@@ -72,10 +72,13 @@ def jogar():
                         abaixado = True
                     elif evento.key == pygame.K_SPACE:
                                 pausado = not pausado
+                    elif evento.key == pygame.K_ESCAPE:
+                        pygame.quit()
+                        quit()
                     elif evento.type == pygame.KEYUP:
                         if evento.key == pygame.K_s or evento.key == pygame.K_DOWN:
                             abaixado = False
-
+                    
 
         if pulando:
             posicaoYbatman += velocidadePulo
