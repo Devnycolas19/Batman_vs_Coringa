@@ -54,42 +54,45 @@ def jogar():
     dificuldade = 20
     chaoBatman = 520
     pulando = False
-    noChao = True
+    agachado = True
     velocidadePulo = 0
     gravidade = 1
     abaixado = False
+    pausado = False
     while True:
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
                 quit()
             elif evento.type == pygame.KEYDOWN:
-                    if (evento.key == pygame.K_w or evento.key == pygame.K_UP) and noChao:
+                    if (evento.key == pygame.K_w or evento.key == pygame.K_UP) and agachado:
                         pulando = True
-                        noChao = False
+                        agachado = False
                         velocidadePulo = -18
                     elif evento.key == pygame.K_s or evento.key == pygame.K_DOWN:
                         abaixado = True
+                    elif evento.key == pygame.K_SPACE:
+                                pausado = not pausado
                     elif evento.type == pygame.KEYUP:
                         if evento.key == pygame.K_s or evento.key == pygame.K_DOWN:
                             abaixado = False
-                
-        
+
+
         if pulando:
             posicaoYbatman += velocidadePulo
             velocidadePulo += gravidade
         if posicaoYbatman >= chaoBatman:
             posicaoYbatman = chaoBatman
             pulando = False
-            noChao = True
+            agachado = True
             
-            
-        posicaoXCarta = posicaoXCarta - velocidadeCarta
-        giroCarta += 5
-        if posicaoXCarta < -125:
-            posicaoXCarta = 800
-            pontos = pontos + 1
-            velocidadeCarta = velocidadeCarta + 1
-            posicaoYCarta = random.choice([500, 580])
+        if not pausado:
+            posicaoXCarta = posicaoXCarta - velocidadeCarta
+            giroCarta += 5
+            if posicaoXCarta < -125:
+                posicaoXCarta = 800
+                pontos = pontos + 1
+                velocidadeCarta = velocidadeCarta + 1
+                posicaoYCarta = random.choice([500, 580])
         cartaGirando = pygame.transform.rotate(carta, giroCarta)                    
         tela.fill(branco)
         tela.blit(fundo, (0, 0))
@@ -100,7 +103,8 @@ def jogar():
         tela.blit(cartaGirando, (posicaoXCarta, posicaoYCarta) )
         texto = fonteMenu.render("Pontos: "+str(pontos), True, branco)
         tela.blit(texto, (700,15))
-            
+        textoPause = fonteMenu.render("Press Space to Pause Game", True, branco)
+        tela.blit(textoPause, (10, 15))    
         pixelsbatmanX = list(range(posicaoXbatman, posicaoXbatman+160))
         pixelsbatmanY = list(range(posicaoYbatman, posicaoYbatman+20))
         pixelsCartaX = list(range(posicaoXCarta, posicaoXCarta + 125))
@@ -114,7 +118,10 @@ def jogar():
                 print("Ainda Vivo, mas por pouco!")
         else:
             print("Ainda Vivo")
-        
+        if pausado:
+            fontePause = pygame.font.SysFont(None, 80)
+            textoPause = fontePause.render("PAUSE", True, (255, 255, 255))
+            tela.blit(textoPause, (400, 300))
         
         pygame.display.update()
         relogio.tick(60)
