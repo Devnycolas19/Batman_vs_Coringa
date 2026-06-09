@@ -44,7 +44,7 @@ def jogar():
     posicaoYcoringa = 450
     posicaoXCarta = 835
     posicaoYCarta = 470
-    velocidadeCarta = 2
+    velocidadeCarta = 4
     giroCarta = 0
     pontos = 0
 
@@ -59,21 +59,24 @@ def jogar():
     while True:
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
-                quit()
-            elif evento.type == pygame.KEYDOWN:
-                if (evento.key == pygame.K_w or evento.key == pygame.K_UP) and agachado and not abaixado:
-                    pulando = True
-                    velocidadePulo = -18
-            elif evento.key == pygame.K_s or evento.key == pygame.K_DOWN:
-                abaixado = True
-            elif evento.key == pygame.K_SPACE:
-                pausado = not pausado
-            elif evento.key == pygame.K_ESCAPE:
                 pygame.quit()
                 quit()
-            elif evento.type == pygame.KEYUP:
-                if evento.key == pygame.K_s or evento.key == pygame.K_DOWN:
+            elif evento.type == pygame.KEYDOWN:
+                if (evento.key == pygame.K_w or evento.key == pygame.K_UP) and not pulando:
                     abaixado = False
+                    pulando = True
+                    agachado = False
+                    velocidadePulo = -21
+                elif evento.key == pygame.K_s or evento.key == pygame.K_DOWN:
+                    abaixado = True
+                elif evento.key == pygame.K_SPACE:
+                    pausado = not pausado
+                elif evento.key == pygame.K_ESCAPE:
+                    pygame.quit()
+                    quit()
+                elif evento.type == pygame.KEYUP:
+                    if evento.key == pygame.K_s or evento.key == pygame.K_DOWN:
+                        abaixado = False
         if pulando:
             posicaoYbatman += velocidadePulo
             velocidadePulo += gravidade
@@ -88,7 +91,7 @@ def jogar():
             if posicaoXCarta < -125:
                 posicaoXCarta = 800
                 pontos = pontos + 1
-                velocidadeCarta = velocidadeCarta + 1
+                velocidadeCarta = velocidadeCarta + 0.3
                 posicaoYCarta = random.choice([470, 515])
         cartaGirando = pygame.transform.rotate(carta, giroCarta)                    
         tela.fill(branco)
@@ -102,15 +105,15 @@ def jogar():
         tela.blit(texto, (700,15))
         textoPause = fonteMenu.render("Press Space to Pause Game", True, branco)
         tela.blit(textoPause, (10, 15))    
-        pixelsbatmanX = list(range(posicaoXbatman, posicaoXbatman + 160))
+        pixelsbatmanX = list(range(posicaoXbatman + 45, posicaoXbatman + 120))
         if abaixado and not pulando:
-            pixelsbatmanY = list(range(posicaoYbatman + 65, posicaoYbatman + 150))
+            pixelsbatmanY = list(range(posicaoYbatman + 80, posicaoYbatman + 145))
         else:
-            pixelsbatmanY = list(range(posicaoYbatman + 15, posicaoYbatman + 150))
-            pixelsCartaX = list(range(posicaoXCarta, posicaoXCarta + 125))
-            pixelsCartaY = list(range(posicaoYCarta, posicaoYCarta + 25))
-        if  len( list( set(pixelsCartaY).intersection(set(pixelsbatmanY))) ) > dificuldade:
-            if len( list( set(pixelsCartaX).intersection(set(pixelsbatmanX))   ) )  > dificuldade:
+            pixelsbatmanY = list(range(posicaoYbatman + 35, posicaoYbatman + 145))
+        pixelsCartaX = list(range(int(posicaoXCarta + 35), int(posicaoXCarta + 95)))
+        pixelsCartaY = list(range(int(posicaoYCarta + 8),int( posicaoYCarta + 22)))
+        if len(list(set(pixelsCartaY).intersection(set(pixelsbatmanY)))) > 5:
+            if len(list(set(pixelsCartaX).intersection(set(pixelsbatmanX)))) > 5:
                 escreverDados(nome, pontos)
                 dead()
                 
