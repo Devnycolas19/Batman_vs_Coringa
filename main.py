@@ -33,28 +33,25 @@ carta = pygame.image.load("bases/carta1.png")
 carta = pygame.transform.scale(carta, (40,60))
 coringa = pygame.image.load("bases/coringa.png")
 coringa = pygame.transform.scale(coringa, (160, 120))
-missileSound = pygame.mixer.Sound("bases/missile.wav")
-explosaoSound = pygame.mixer.Sound("bases/explosao.wav")
-pygame.mixer.music.load("bases/ironsound.mp3")
+
 fonteMenu = pygame.font.SysFont("comicsans",18)
 
 def jogar():
     tela.blit(fundo, (0, 0))
     posicaoXbatman = 130
-    posicaoYbatman = 550
+    posicaoYbatman = 450
     posicaoXcoringa = 820
-    posicaoYcoringa = 590
-    posicaoXCarta = 780
-    posicaoYCarta = 510
+    posicaoYcoringa = 450
+    posicaoXCarta = 835
+    posicaoYCarta = 470
     velocidadeCarta = 2
     giroCarta = 0
     pontos = 0
-    pygame.mixer.Sound.play(missileSound)
-    pygame.mixer.music.play(-1)
+
     dificuldade = 20
-    chaoBatman = 520
+    chaoBatman = 450
     pulando = False
-    agachado = True
+    agachado = False
     velocidadePulo = 0
     gravidade = 1
     abaixado = False
@@ -64,22 +61,19 @@ def jogar():
             if evento.type == pygame.QUIT:
                 quit()
             elif evento.type == pygame.KEYDOWN:
-                    if (evento.key == pygame.K_w or evento.key == pygame.K_UP) and agachado:
-                        pulando = True
-                        agachado = False
-                        velocidadePulo = -18
-                    elif evento.key == pygame.K_s or evento.key == pygame.K_DOWN:
-                        abaixado = True
-                    elif evento.key == pygame.K_SPACE:
-                                pausado = not pausado
-                    elif evento.key == pygame.K_ESCAPE:
-                        pygame.quit()
-                        quit()
-                    elif evento.type == pygame.KEYUP:
-                        if evento.key == pygame.K_s or evento.key == pygame.K_DOWN:
-                            abaixado = False
-                    
-
+                if (evento.key == pygame.K_w or evento.key == pygame.K_UP) and agachado and not abaixado:
+                    pulando = True
+                    velocidadePulo = -18
+            elif evento.key == pygame.K_s or evento.key == pygame.K_DOWN:
+                abaixado = True
+            elif evento.key == pygame.K_SPACE:
+                pausado = not pausado
+            elif evento.key == pygame.K_ESCAPE:
+                pygame.quit()
+                quit()
+            elif evento.type == pygame.KEYUP:
+                if evento.key == pygame.K_s or evento.key == pygame.K_DOWN:
+                    abaixado = False
         if pulando:
             posicaoYbatman += velocidadePulo
             velocidadePulo += gravidade
@@ -95,7 +89,7 @@ def jogar():
                 posicaoXCarta = 800
                 pontos = pontos + 1
                 velocidadeCarta = velocidadeCarta + 1
-                posicaoYCarta = random.choice([500, 580])
+                posicaoYCarta = random.choice([470, 515])
         cartaGirando = pygame.transform.rotate(carta, giroCarta)                    
         tela.fill(branco)
         tela.blit(fundo, (0, 0))
@@ -108,10 +102,13 @@ def jogar():
         tela.blit(texto, (700,15))
         textoPause = fonteMenu.render("Press Space to Pause Game", True, branco)
         tela.blit(textoPause, (10, 15))    
-        pixelsbatmanX = list(range(posicaoXbatman, posicaoXbatman+160))
-        pixelsbatmanY = list(range(posicaoYbatman, posicaoYbatman+20))
-        pixelsCartaX = list(range(posicaoXCarta, posicaoXCarta + 125))
-        pixelsCartaY = list(range(posicaoYCarta, posicaoYCarta + 25))
+        pixelsbatmanX = list(range(posicaoXbatman, posicaoXbatman + 160))
+        if abaixado and not pulando:
+            pixelsbatmanY = list(range(posicaoYbatman + 65, posicaoYbatman + 150))
+        else:
+            pixelsbatmanY = list(range(posicaoYbatman + 15, posicaoYbatman + 150))
+            pixelsCartaX = list(range(posicaoXCarta, posicaoXCarta + 125))
+            pixelsCartaY = list(range(posicaoYCarta, posicaoYCarta + 25))
         if  len( list( set(pixelsCartaY).intersection(set(pixelsbatmanY))) ) > dificuldade:
             if len( list( set(pixelsCartaX).intersection(set(pixelsbatmanX))   ) )  > dificuldade:
                 escreverDados(nome, pontos)
@@ -130,8 +127,7 @@ def jogar():
         relogio.tick(60)
 
 def dead():
-    pygame.mixer.music.stop()
-    pygame.mixer.Sound.play(explosaoSound)
+
     larguraButtonStart = 150
     alturaButtonStart  = 40
     larguraButtonQuit = 150
