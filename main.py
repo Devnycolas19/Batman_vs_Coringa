@@ -31,9 +31,9 @@ mensagens = texto_boas_vindas(nome)
 batmanParado = pygame.image.load("bases/batmanParado.png")
 batmanPulando = pygame.image.load("bases/batmanPulando.png")
 batmanAgachado = pygame.image.load("bases/batmanAgachado.png")
-batmanParado = pygame.transform.scale(batmanParado, (110, 130))
-batmanPulando = pygame.transform.scale(batmanPulando, (110, 130))
-batmanAgachado = pygame.transform.scale(batmanAgachado, (120, 90))
+batmanParado = pygame.transform.scale(batmanParado, (160, 120))
+batmanPulando = pygame.transform.scale(batmanPulando, (140, 130))
+batmanAgachado = pygame.transform.scale(batmanAgachado, (120, 100))
 carta = pygame.image.load("bases/carta1.png")
 carta = pygame.transform.scale(carta, (40,60))
 coringa = pygame.image.load("bases/coringa.png")
@@ -78,29 +78,33 @@ def jogar():
             if evento.type == pygame.QUIT:
                 pygame.quit()
                 quit()
+
             elif evento.type == pygame.KEYDOWN:
                 if (evento.key == pygame.K_w or evento.key == pygame.K_UP) and not pulando:
                     abaixado = False
                     pulando = True
-                    agachado = False
                     velocidadePulo = -21
+
                 elif evento.key == pygame.K_s or evento.key == pygame.K_DOWN:
                     abaixado = True
+
                 elif evento.key == pygame.K_SPACE:
                     pausado = not pausado
+
                 elif evento.key == pygame.K_ESCAPE:
                     pygame.quit()
                     quit()
-                elif evento.type == pygame.KEYUP:
-                    if evento.key == pygame.K_s or evento.key == pygame.K_DOWN:
-                        abaixado = False
+
+            elif evento.type == pygame.KEYUP:
+                if evento.key == pygame.K_s or evento.key == pygame.K_DOWN:
+                    abaixado = False
         if pulando:
             posicaoYbatman += velocidadePulo
             velocidadePulo += gravidade
         if posicaoYbatman >= chaoBatman:
             posicaoYbatman = chaoBatman
             pulando = False
-            agachado = True
+            agachado = False
             
         if not pausado:
             posicaoXCarta = posicaoXCarta - velocidadeCarta
@@ -123,7 +127,7 @@ def jogar():
         imagemBatman = batmanParado
         if pulando:
             imagemBatman = batmanPulando
-        elif agachado:
+        elif abaixado:
             imagemBatman = batmanAgachado
         tela.blit(morcegos, (posicaoXmorcegos, posicaoYmorcegos))
         tela.blit(imagemBatman, (posicaoXbatman,posicaoYbatman))
