@@ -1,7 +1,7 @@
 import pygame
 import random
 from recursos.funcoes import inicializarBancoDeDados, limpar_tela, escreverDados, maior_pontuador
-
+from recursos.trabalho import texto_boas_vindas
 limpar_tela()
 inicializarBancoDeDados()
 nome_maior, maior_pontos, dataJogada = maior_pontuador()
@@ -26,7 +26,7 @@ preto = (0, 0, 0)
 fundo = pygame.image.load("bases/fundoFase.png")
 fundoDead = pygame.image.load("bases/TelaDerrota.png")
 fundoStart = pygame.image.load("bases/TelaInicio.png")
-
+mensagens = texto_boas_vindas(nome)
 batman = pygame.image.load("bases/Batman.png")
 batman = pygame.transform.scale(batman, (160,120))
 carta = pygame.image.load("bases/carta1.png")
@@ -175,48 +175,77 @@ def dead():
         pygame.display.update()
         relogio.tick(60)
 
+def boas_vindas():
+    while True:
+        tela.blit(fundoStart, (0, 0))
 
+        titulo = fonteMenu.render("Bem-vindo ao Batman vs Coringa", True, branco)
+        tela.blit(titulo, (250, 80))
+
+        y = 160
+        for linha in mensagens:
+            texto = fonteMenu.render(linha, True, branco)
+            tela.blit(texto, (170, y))
+            y += 40
+
+        recorde = fonteMenu.render(
+            f"Recorde: {nome_maior} - {maior_pontos} pontos - {dataJogada}",
+            True,
+            branco)
+        tela.blit(recorde, (170, 430))
+
+        botaoIniciar = pygame.Rect(390, 530, 220, 55)
+        pygame.draw.rect(tela, branco, botaoIniciar)
+
+        textoBotao = fonteMenu.render("INICIAR", True, preto)
+        tela.blit(textoBotao, (455, 545))
+
+        for evento in pygame.event.get():
+            if evento.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+
+            elif evento.type == pygame.KEYDOWN:
+                if evento.key == pygame.K_ESCAPE:
+                    pygame.quit()
+                    quit()
+
+            elif evento.type == pygame.MOUSEBUTTONDOWN:
+                if botaoIniciar.collidepoint(evento.pos):
+                    jogar()
+
+        pygame.display.update()
+        relogio.tick(60)
 
 def start():
     larguraButtonStart = 150
     alturaButtonStart  = 40
-    larguraButtonQuit = 150
-    alturaButtonQuit  = 40
+    
     while True:
+        startButton = pygame.Rect(425, 380, larguraButtonStart, alturaButtonStart)
+
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
+                pygame.quit()
                 quit()
+
             elif evento.type == pygame.MOUSEBUTTONDOWN:
                 if startButton.collidepoint(evento.pos):
                     larguraButtonStart = 140
-                    alturaButtonStart  = 35
-                if quitButton.collidepoint(evento.pos):
-                    larguraButtonQuit = 140
-                    alturaButtonQuit  = 35
+                    alturaButtonStart = 35
 
-                
             elif evento.type == pygame.MOUSEBUTTONUP:
-                # Verifica se o clique foi dentro do retângulo
                 if startButton.collidepoint(evento.pos):
-                    #pygame.mixer.music.play(-1)
                     larguraButtonStart = 150
-                    alturaButtonStart  = 40
-                    jogar()
-                if quitButton.collidepoint(evento.pos):
-                    #pygame.mixer.music.play(-1)
-                    larguraButtonQuit = 150
-                    alturaButtonQuit  = 40
-                    quit()
+                    alturaButtonStart = 40
+                    boas_vindas()
             
         tela.fill(branco)
         tela.blit(fundoStart, (0,0))
-        startButton = pygame.draw.rect(tela, branco, (10,10, larguraButtonStart, alturaButtonStart), border_radius=15)
         startTexto = fonteMenu.render("Iniciar Game", True, preto)
-        tela.blit(startTexto, (25,12))
-        
-        quitButton = pygame.draw.rect(tela, branco, (10,60, larguraButtonQuit, alturaButtonQuit), border_radius=15)
-        quitTexto = fonteMenu.render("Sair do Game", True, preto)
-        tela.blit(quitTexto, (25,62))
+        tela.blit(startTexto, (435, 388))
+
+
         texto = fonteMenu.render(f"The Best - {nome_maior} - {maior_pontos} - { dataJogada} ", True, branco)
         tela.blit(texto, (480,15))
         
