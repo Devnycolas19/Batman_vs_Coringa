@@ -1,0 +1,6 @@
+README.md
+setup.py
+Batman_vs_Coringa.egg-info/PKG-INFO
+Batman_vs_Coringa.egg-info/SOURCES.txt
+Batman_vs_Coringa.egg-info/dependency_links.txt
+Batman_vs_Coringa.egg-info/top_level.txt
