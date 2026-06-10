@@ -33,6 +33,8 @@ carta = pygame.image.load("bases/carta1.png")
 carta = pygame.transform.scale(carta, (40,60))
 coringa = pygame.image.load("bases/coringa.png")
 coringa = pygame.transform.scale(coringa, (160, 120))
+morcegos = pygame.image.load("bases/morcegos.png")
+morcegos = pygame.transform.scale(morcegos, (120, 70))
 
 fonteMenu = pygame.font.SysFont("comicsans",18)
 fonteTitulo = pygame.font.SysFont("comicsans", 46)
@@ -54,6 +56,9 @@ def jogar():
     velocidadeCarta = 4
     giroCarta = 0
     pontos = 0
+    posicaoXmorcegos = -150
+    posicaoYmorcegos = 90
+    velocidadeMorcegos = 2
 
     dificuldade = 20
     chaoBatman = 450
@@ -95,6 +100,12 @@ def jogar():
         if not pausado:
             posicaoXCarta = posicaoXCarta - velocidadeCarta
             giroCarta += 5
+
+            posicaoXmorcegos += velocidadeMorcegos
+            if posicaoXmorcegos > 1050:
+                posicaoXmorcegos = -150
+                posicaoYmorcegos = random.choice([60, 90, 120, 150])
+
             if posicaoXCarta < -125:
                 posicaoXCarta = 800
                 pontos = pontos + 1
@@ -104,7 +115,7 @@ def jogar():
         tela.fill(branco)
         tela.blit(fundo, (0, 0))
         
-        
+        tela.blit(morcegos, (posicaoXmorcegos, posicaoYmorcegos))
         tela.blit(batman, (posicaoXbatman,posicaoYbatman))
         tela.blit(coringa, (posicaoXcoringa, posicaoYcoringa))
         tela.blit(cartaGirando, (posicaoXCarta, posicaoYCarta) )
