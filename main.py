@@ -35,6 +35,13 @@ coringa = pygame.image.load("bases/coringa.png")
 coringa = pygame.transform.scale(coringa, (160, 120))
 
 fonteMenu = pygame.font.SysFont("comicsans",18)
+fonteTitulo = pygame.font.SysFont("comicsans", 46)
+fonteBotao = pygame.font.SysFont("comicsans", 28)
+fonteDicas = pygame.font.SysFont("comicsans", 24)
+
+amareloBatman = (255, 220, 0)
+cinzaEscuro = (25, 25, 25)
+cinzaClaro = (70, 70, 70)
 
 def jogar():
     tela.blit(fundo, (0, 0))
@@ -115,7 +122,7 @@ def jogar():
         if len(list(set(pixelsCartaY).intersection(set(pixelsbatmanY)))) > 5:
             if len(list(set(pixelsCartaX).intersection(set(pixelsbatmanX)))) > 5:
                 escreverDados(nome, pontos)
-                dead()
+                dead(pontos)
                 
             else:
                 print("Ainda Vivo, mas por pouco!")
@@ -129,48 +136,39 @@ def jogar():
         pygame.display.update()
         relogio.tick(60)
 
-def dead():
-
-    larguraButtonStart = 150
-    alturaButtonStart  = 40
-    larguraButtonQuit = 150
-    alturaButtonQuit  = 40
+def dead(pontos):
     while True:
+        tela.blit(fundoDead, (0, 0))
+
+        largura = tela.get_width()
+        altura = tela.get_height()
+
+        # Pontuação no canto superior esquerdo
+        texto_pontos = fonteMenu.render(f"Pontuação: {pontos}", True, branco)
+        tela.blit(texto_pontos, (30, 35))
+
+        # Botão tentar novamente maior
+        botaoTentar = pygame.Rect(300, 560, 400, 60)
+        desenhar_botao("TENTAR NOVAMENTE", botaoTentar)
+
+        # Aviso ESC
+        aviso = fonteMenu.render("Aperte ESC para sair", True, branco)
+        aviso_rect = aviso.get_rect(bottomright=(largura - 30, altura - 25))
+        tela.blit(aviso, aviso_rect)
+
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
+                pygame.quit()
                 quit()
-            elif evento.type == pygame.MOUSEBUTTONDOWN:
-                if startButton.collidepoint(evento.pos):
-                    larguraButtonStart = 140
-                    alturaButtonStart  = 35
-                if quitButton.collidepoint(evento.pos):
-                    larguraButtonQuit = 140
-                    alturaButtonQuit  = 35
 
-                
-            elif evento.type == pygame.MOUSEBUTTONUP:
-                # Verifica se o clique foi dentro do retângulo
-                if startButton.collidepoint(evento.pos):
-                    #pygame.mixer.music.play(-1)
-                    larguraButtonStart = 150
-                    alturaButtonStart  = 40
-                    jogar()
-                if quitButton.collidepoint(evento.pos):
-                    #pygame.mixer.music.play(-1)
-                    larguraButtonQuit = 150
-                    alturaButtonQuit  = 40
+            elif evento.type == pygame.KEYDOWN:
+                if evento.key == pygame.K_ESCAPE:
+                    pygame.quit()
                     quit()
-            
-        tela.fill(branco)
-        tela.blit(fundoDead, (0,0))
-        startButton = pygame.draw.rect(tela, branco, (10,10, larguraButtonStart, alturaButtonStart), border_radius=15)
-        startTexto = fonteMenu.render("Iniciar Game", True, preto)
-        tela.blit(startTexto, (25,12))
-        
-        quitButton = pygame.draw.rect(tela, branco, (10,60, larguraButtonQuit, alturaButtonQuit), border_radius=15)
-        quitTexto = fonteMenu.render("Sair do Game", True, preto)
-        tela.blit(quitTexto, (25,62))
 
+            elif evento.type == pygame.MOUSEBUTTONDOWN:
+                if botaoTentar.collidepoint(evento.pos):
+                    jogar()
 
         pygame.display.update()
         relogio.tick(60)
@@ -217,38 +215,132 @@ def boas_vindas():
         pygame.display.update()
         relogio.tick(60)
 
-def start():
-    larguraButtonStart = 150
-    alturaButtonStart  = 40
-    
+
+def desenhar_botao(texto, retangulo):
+    mouse = pygame.mouse.get_pos()
+
+    if retangulo.collidepoint(mouse):
+        cor_botao = cinzaClaro
+    else:
+        cor_botao = cinzaEscuro
+
+    pygame.draw.rect(tela, cor_botao, retangulo, border_radius=15)
+    pygame.draw.rect(tela, amareloBatman, retangulo, 3, border_radius=15)
+
+    texto_render = fonteBotao.render(texto, True, branco)
+    texto_rect = texto_render.get_rect(center=retangulo.center)
+    tela.blit(texto_render, texto_rect)
+
+
+def tela_dicas():
     while True:
-        startButton = pygame.Rect(425, 380, larguraButtonStart, alturaButtonStart)
+        tela.blit(fundoStart, (0, 0))
+
+        largura = tela.get_width()
+        altura = tela.get_height()
+
+        # Painel central
+        painel_x = 170
+        painel_y = 70
+        painel_largura = 660
+        painel_altura = 520
+
+        painel = pygame.Surface((painel_largura, painel_altura), pygame.SRCALPHA)
+        painel.fill((0, 0, 0, 190))
+        tela.blit(painel, (painel_x, painel_y))
+
+        pygame.draw.rect(
+            tela,
+            amareloBatman,
+            (painel_x, painel_y, painel_largura, painel_altura),
+            3,
+            border_radius=15
+        )
+
+        # Título
+        titulo = fonteTitulo.render("COMO JOGAR", True, amareloBatman)
+        titulo_rect = titulo.get_rect(center=(largura // 2, 125))
+        tela.blit(titulo, titulo_rect)
+
+        # Regras
+        linhas = [
+            "W ou seta para cima: pular",
+            "S ou seta para baixo: agachar",
+            "SPACE: pausar o jogo",
+            "ESC: voltar para o menu",
+            "",
+            "Carta baixa: pule para desviar",
+            "Carta alta: agache para desviar",
+            "",
+            "Objetivo: desviar das cartas do Coringa",
+            "e fazer a maior pontuação possível."
+            "Para salvar Gotham."
+        ]
+
+        y = 190
+        for linha in linhas:
+            texto = fonteDicas.render(linha, True, branco)
+            texto_rect = texto.get_rect(center=(largura // 2, y))
+            tela.blit(texto, texto_rect)
+            y += 34
+
+        # Botão voltar
+        botaoVoltar = pygame.Rect(390, 610, 220, 55)
+        desenhar_botao("VOLTAR", botaoVoltar)
 
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
                 pygame.quit()
                 quit()
 
+            elif evento.type == pygame.KEYDOWN:
+                if evento.key == pygame.K_ESCAPE:
+                    return
+
             elif evento.type == pygame.MOUSEBUTTONDOWN:
-                if startButton.collidepoint(evento.pos):
-                    larguraButtonStart = 140
-                    alturaButtonStart = 35
+                if botaoVoltar.collidepoint(evento.pos):
+                    return
 
-            elif evento.type == pygame.MOUSEBUTTONUP:
-                if startButton.collidepoint(evento.pos):
-                    larguraButtonStart = 150
-                    alturaButtonStart = 40
-                    boas_vindas()
-            
-        tela.fill(branco)
-        tela.blit(fundoStart, (0,0))
-        startTexto = fonteMenu.render("Iniciar Game", True, preto)
-        tela.blit(startTexto, (435, 388))
+        pygame.display.update()
+        relogio.tick(60)
 
 
-        texto = fonteMenu.render(f"The Best - {nome_maior} - {maior_pontos} - { dataJogada} ", True, branco)
-        tela.blit(texto, (480,15))
-        
+def start():
+    while True:
+        tela.blit(fundoStart, (0, 0))
+        botaoIniciar = pygame.Rect(390, 520, 220, 55)
+        botaoDicas = pygame.Rect(390, 590, 220, 55)
+        desenhar_botao("INICIAR", botaoIniciar)
+        desenhar_botao("DICAS", botaoDicas)
+        largura = tela.get_width()
+        altura = tela.get_height()
+        recorde = fonteMenu.render(
+            f"Recorde: {nome_maior} - {maior_pontos} pontos - {dataJogada}",
+            True,
+            branco
+        )
+        recorde_rect = recorde.get_rect(bottomleft=(30, altura - 25))
+        tela.blit(recorde, recorde_rect)
+        aviso = fonteMenu.render("ESC para sair", True, branco)
+        aviso_rect = aviso.get_rect(bottomright=(largura - 30, altura - 25))
+        tela.blit(aviso, aviso_rect)
+
+        for evento in pygame.event.get():
+            if evento.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+
+            elif evento.type == pygame.KEYDOWN:
+                if evento.key == pygame.K_ESCAPE:
+                    pygame.quit()
+                    quit()
+
+            elif evento.type == pygame.MOUSEBUTTONDOWN:
+                if botaoIniciar.collidepoint(evento.pos):
+                    jogar()
+
+                elif botaoDicas.collidepoint(evento.pos):
+                    tela_dicas()
 
         pygame.display.update()
         relogio.tick(60)
