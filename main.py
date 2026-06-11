@@ -1,5 +1,8 @@
 import pygame
 import random
+import pyttsx3
+import math
+import threading
 from recursos.funcoes import inicializarBancoDeDados, limpar_tela, escreverDados, maior_pontuador
 from recursos.trabalho import texto_boas_vindas
 limpar_tela()
@@ -50,6 +53,14 @@ amareloBatman = (255, 220, 0)
 cinzaEscuro = (25, 25, 25)
 cinzaClaro = (70, 70, 70)
 
+def falar_boas_vindas():
+    def falar():
+        voz = pyttsx3.init()
+        voz.setProperty("rate", 160)
+        voz.say(f"Bem-vindo, {nome}, ao jogo Batman versus Coringa")
+        voz.runAndWait()
+
+    threading.Thread(target=falar, daemon=True).start()
 def jogar():
     tela.blit(fundo, (0, 0))
     posicaoXbatman = 130
@@ -123,7 +134,7 @@ def jogar():
         cartaGirando = pygame.transform.rotate(carta, giroCarta)                    
         tela.fill(branco)
         tela.blit(fundo, (0, 0))
-        
+        desenhar_lua_pulsando(590, 90)
         imagemBatman = batmanParado
         if pulando:
             imagemBatman = batmanPulando
@@ -328,11 +339,32 @@ def tela_dicas():
 
         pygame.display.update()
         relogio.tick(60)
+def desenhar_lua_pulsando(x, y):
+            tempo = pygame.time.get_ticks() / 500
 
+            raio_lua = 38 + int(4 * math.sin(tempo))
+            raio_brilho = 65 + int(8 * math.sin(tempo))
+            transparencia = 55 + int(25 * math.sin(tempo))
 
+            brilho = pygame.Surface((raio_brilho * 2, raio_brilho * 2), pygame.SRCALPHA)
+
+            pygame.draw.circle(
+                brilho,
+                (255, 255, 180, transparencia),
+                (raio_brilho, raio_brilho),
+                raio_brilho
+            )
+
+            tela.blit(brilho, (x - raio_brilho, y - raio_brilho))
+
+            pygame.draw.circle(tela, (240, 240, 210), (x, y), raio_lua)
+            pygame.draw.circle(tela, (200, 200, 180), (x - 12, y - 8), 5)
+            pygame.draw.circle(tela, (210, 210, 190), (x + 10, y + 7), 4)
+            pygame.draw.circle(tela, (190, 190, 170), (x + 4, y - 14), 3)
 def start():
     while True:
         tela.blit(fundoStart, (0, 0))
+        
         botaoIniciar = pygame.Rect(390, 520, 220, 55)
         botaoDicas = pygame.Rect(390, 590, 220, 55)
         desenhar_botao("INICIAR", botaoIniciar)
@@ -359,9 +391,9 @@ def start():
                 if evento.key == pygame.K_ESCAPE:
                     pygame.quit()
                     quit()
-
             elif evento.type == pygame.MOUSEBUTTONDOWN:
                 if botaoIniciar.collidepoint(evento.pos):
+                    falar_boas_vindas()
                     jogar()
 
                 elif botaoDicas.collidepoint(evento.pos):

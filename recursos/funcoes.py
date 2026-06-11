@@ -25,8 +25,7 @@ def escreverDados(nome, pontos):
         dadosDict = json.loads(dados)
     else:
         dadosDict = {}
-        
-    data_br = datetime.now().strftime("%d/%m/%Y")
+    data_br = datetime.now().strftime("%d/%m/%Y %H:%M")
     dadosDict[nome] = (pontos, data_br)
     
     banco = open("base.atitus","w")
